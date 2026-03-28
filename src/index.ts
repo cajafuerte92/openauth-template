@@ -24,11 +24,11 @@ export default {
     // the callback redirect on completion.
     const url = new URL(request.url);
     if (url.pathname === "/") {
-      url.searchParams.set("redirect_uri", url.origin + "/callback");
-      url.searchParams.set("client_id", "your-client-id");
-      url.searchParams.set("response_type", "code");
-      url.pathname = "/authorize";
-      return Response.redirect(url.toString());
+      return new Response(renderHomePage(), {
+        headers: {
+          "content-type": "text/html; charset=utf-8",
+        },
+      });
     } else if (url.pathname === "/callback") {
       return Response.json({
         message: "OAuth flow complete!",
@@ -93,4 +93,116 @@ async function getOrCreateUser(env: Env, email: string): Promise<string> {
   }
   console.log(`Found or created user ${result.id} with email ${email}`);
   return result.id;
+}
+
+
+function renderHomePage(): string {
+  return `<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recursos</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg-start: #e8f1ff;
+        --bg-end: #bed5ff;
+        --card-bg: #ffffff;
+        --text: #0f2f66;
+        --accent: #2166d1;
+        --accent-dark: #15489a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Inter Tight", "Segoe UI", Roboto, Arial, sans-serif;
+        background: linear-gradient(160deg, var(--bg-start), var(--bg-end));
+        color: var(--text);
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .card {
+        width: min(720px, 100%);
+        background: var(--card-bg);
+        border-radius: 18px;
+        padding: 28px;
+        box-shadow: 0 18px 45px rgba(13, 46, 99, 0.16);
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        color: var(--accent-dark);
+        font-size: clamp(1.6rem, 3vw, 2.2rem);
+      }
+
+      p {
+        margin: 0 0 18px;
+      }
+
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 12px;
+      }
+
+      a {
+        display: block;
+        text-decoration: none;
+        color: var(--accent-dark);
+        background: #f1f7ff;
+        border: 1px solid rgba(33, 102, 209, 0.18);
+        border-radius: 12px;
+        padding: 14px 16px;
+        font-weight: 600;
+        transition: transform 0.15s ease, box-shadow 0.15s ease,
+          background 0.15s ease;
+      }
+
+      a:hover,
+      a:focus-visible {
+        background: #dceaff;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 18px rgba(33, 102, 209, 0.2);
+        outline: none;
+      }
+
+      .url {
+        display: block;
+        margin-top: 4px;
+        font-size: 0.9rem;
+        opacity: 0.82;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <h1>Recursos</h1>
+      <p>Accesos directos a tus servicios:</p>
+      <ul>
+        <li>
+          <a href="https://cyberchef.rpingarronm.com" target="_blank" rel="noopener noreferrer">
+            CyberChef
+            <span class="url">cyberchef.rpingarronm.com</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://jellyfin.rpingarronm.com" target="_blank" rel="noopener noreferrer">
+            Jellyfin
+            <span class="url">jellyfin.rpingarronm.com</span>
+          </a>
+        </li>
+      </ul>
+    </main>
+  </body>
+</html>`;
 }
